@@ -41,4 +41,4 @@ jobs:
           docker pull maxzhirnov/hemaks-cover-generator:latest
           docker stop hemaks-cover-generator || true
           docker rm hemaks-cover-generator || true
-          docker run -d -p 8992:5000 --name hemaks-cover-generator maxzhirnov/hemaks-cover-generator:latest
+          docker run -d -p 8992:5000 --name hemaks-cover-generator -v /home/maksim/hemacs-covers:/app/public maxzhirnov/hemaks-cover-generator:latest
