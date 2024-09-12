@@ -24,8 +24,8 @@ This is a simple Flask application that generates images with a given title cent
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/maxzhirnov/hemaks-cover-generator.git
+   cd hemaks-cover-generator
    ```
 
 2. **Set up a virtual environment:**
