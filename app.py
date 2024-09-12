@@ -4,6 +4,7 @@ import os
 import random
 import math
 from math import sin, cos, radians
+import io
 
 
 
@@ -15,8 +16,8 @@ FONT_SIZE = 50  # Font size
 MAX_TEXT_WIDTH = 900  # Maximum width for the text block
 STICKERS_DIR = 'stickers'  # Directory containing sticker PNG images
 MAX_STICKERS = 10  # Maximum number of stickers to place
-STICKER_SIZE_RANGE = (0.15, 0.25)
-ROTATION_RANGE = (-20, 20)  # Rotation range in degrees
+STICKER_SIZE_RANGE = (0.1, 0.2)
+ROTATION_RANGE = (-30, 30)  # Rotation range in degrees
 STICKER_CROP_FACTOR = 0.3
 
 app = Flask(__name__)
@@ -176,9 +177,19 @@ def create_image():
         draw_text_with_highlight(draw, line, font, (text_x, current_y), (255, 255, 255), (0, 0, 0))
         current_y += draw.textbbox((0, 0), line, font=font)[3]
 
-    # Save the image
-    image_path = f'public/{title.replace(" ", "_")}.png'
-    img.save(image_path)
+    # Save the image in WebP format
+    image_path = f'public/{title.replace(" ", "_")}.webp'
+    
+    # Convert to RGB mode (WebP doesn't support RGBA)
+    img = img.convert('RGB')
+    
+    # Use BytesIO to save in memory first
+    img_byte_arr = io.BytesIO()
+    img.save(img_byte_arr, format='WEBP', quality=85, method=6)
+    
+    # Write to file
+    with open(image_path, 'wb') as f:
+        f.write(img_byte_arr.getvalue())
 
     return jsonify({"image_path": image_path}), 200
 
