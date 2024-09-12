@@ -22,6 +22,10 @@ def create_image():
     if not title:
         return jsonify({"error": "Title is required"}), 400
 
+    # Add .png extension if not present
+    if not template_name.endswith('.png'):
+        template_name += '.png'
+
     # Construct the template path
     template_path = os.path.join(TEMPLATE_DIR, template_name)
 
@@ -71,6 +75,12 @@ def create_image():
     img.save(image_path)
 
     return jsonify({"image_path": image_path}), 200
+
+@app.route('/list-templates', methods=['GET'])
+def list_templates():
+    # List all .png files in the TEMPLATE_DIR
+    templates = [f[:-4] for f in os.listdir(TEMPLATE_DIR) if f.endswith('.png')]
+    return jsonify({"templates": templates})
 
 if __name__ == '__main__':
     app.run(debug=True)
