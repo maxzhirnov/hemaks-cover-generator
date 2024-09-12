@@ -185,7 +185,7 @@ def create_image():
     
     # Use BytesIO to save in memory first
     img_byte_arr = io.BytesIO()
-    img.save(img_byte_arr, format='WEBP', quality=85, method=6)
+    img.save(img_byte_arr, format='WEBP', quality=30, method=6)
     
     # Write to file
     with open(image_path, 'wb') as f:
