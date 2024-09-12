@@ -3,10 +3,11 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 
 # Constants
-TEMPLATE_PATH = 'template.png'  # Path to your PNG template
-FONT_PATH = 'AzeretMono-Regular.ttf'         # Path to your font file
-FONT_SIZE = 50                  # Font size
-MAX_TEXT_WIDTH = 900           # Maximum width for the text block (1200 - 80 for padding)
+TEMPLATE_DIR = 'templates'  # Directory containing your PNG templates
+DEFAULT_TEMPLATE = 'default.png'  # Default template file
+FONT_PATH = 'AzeretMono-Regular.ttf'  # Path to your font file
+FONT_SIZE = 50  # Font size
+MAX_TEXT_WIDTH = 900  # Maximum width for the text block
 
 app = Flask(__name__)
 
@@ -16,14 +17,19 @@ os.makedirs('public', exist_ok=True)
 @app.route('/create-image', methods=['POST'])
 def create_image():
     title = request.json.get('title')
+    template_name = request.json.get('template_name', DEFAULT_TEMPLATE)
+
     if not title:
         return jsonify({"error": "Title is required"}), 400
 
-    # Open your PNG template
+    # Construct the template path
+    template_path = os.path.join(TEMPLATE_DIR, template_name)
+
+    # Open the specified PNG template
     try:
-        img = Image.open(TEMPLATE_PATH)
+        img = Image.open(template_path)
     except IOError:
-        return jsonify({"error": "Template image not found"}), 500
+        return jsonify({"error": f"Template image '{template_name}' not found"}), 500
 
     draw = ImageDraw.Draw(img)
 
