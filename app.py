@@ -5,13 +5,14 @@ import random
 import math
 from math import sin, cos, radians
 import io
-
-
+from transliterate import translit, detect_language
+import re
+import unicodedata
 
 # Constants
 TEMPLATE_DIR = 'templates'  # Directory containing your PNG templates
 DEFAULT_TEMPLATE = 'default.png'  # Default template file
-FONT_PATH = 'AzeretMono-Regular.ttf'  # Path to your font file
+FONT_PATH = 'SourceCodePro-Regular.ttf'  # Path to your font file
 FONT_SIZE = 50  # Font size
 MAX_TEXT_WIDTH = 900  # Maximum width for the text block
 STICKERS_DIR = 'stickers'  # Directory containing sticker PNG images
@@ -102,6 +103,24 @@ def add_stickers(base_image, num_stickers):
 
     return base_image
 
+def slugify(text):
+    """
+    Convert spaces or repeated dashes to single dashes. Remove characters that aren't alphanumerics, 
+    underscores, or hyphens. Convert to lowercase. Also strip leading and trailing whitespace.
+    """
+    text = unicodedata.normalize('NFKD', text)
+    text = re.sub(r'[^\w\s-]', '', text).strip().lower()
+    return re.sub(r'[-\s]+', '-', text)
+
+def transliterate_filename(title):
+    # Detect if the title contains Cyrillic characters
+    if re.search('[\u0400-\u04FF]', title):
+        # Transliterate Cyrillic characters to Latin
+        title = translit(title, 'ru', reversed=True)
+    
+    # Slugify the title to make it URL-friendly
+    return slugify(title)
+
 @app.route('/create-image', methods=['POST'])
 def create_image():
     title = request.json.get('title')
@@ -177,8 +196,10 @@ def create_image():
         draw_text_with_highlight(draw, line, font, (text_x, current_y), (255, 255, 255), (0, 0, 0))
         current_y += draw.textbbox((0, 0), line, font=font)[3]
 
+    # Transliterate the filename if it's in Cyrillic
+    transliterated_title = transliterate_filename(title)
     # Save the image in WebP format
-    image_path = f'public/{title.replace(" ", "_")}.webp'
+    image_path = f'public/{transliterated_title.replace(" ", "_")}.webp'
     
     # Convert to RGB mode (WebP doesn't support RGBA)
     img = img.convert('RGB')
