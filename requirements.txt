@@ -9,4 +9,6 @@ packaging==24.1
 pillow==10.4.0
 pluggy==1.5.0
 pytest==8.3.3
+six==1.16.0
+transliterate==1.10.2
 Werkzeug==3.0.4
